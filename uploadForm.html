@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;\\20
+      }
+      input[type="file"] {
+        margin-bottom: 10px;\\10
+      }
+      #linkContainer {
+        margin-top: 20px;\\20
+      }
+      #linkContainer a {
+        display: block;
+        margin-top: 10px;\\10
+      }
+    </style>
+  </head>
+  <body>
+    <input type="file" id="fileInput" onchange="handleFileSelect(event)">
+    <div id="linkContainer"></div>
+    <script>
+      function handleFileSelect(event) {
+        var files = event.target.files;
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var base64Data = e.target.result.split(',')[1];
+          google.script.run.withSuccessHandler(showLink).uploadFileToDrive(base64Data, file.name);
+        };
+        reader.readAsDataURL(file);
+      }
+      function showLink(url) {
+        var linkContainer = document.getElementById('linkContainer');
+        linkContainer.innerHTML = '';
+        var link = document.createElement('a');
+        link.href = url;
+        link.textContent = 'ไฟล์ PDF';
+        link.target = '_blank';
+        linkContainer.appendChild(link);
+        google.script.host.close();
+      }
+    </script>
+  </body>
+</html>
+ 

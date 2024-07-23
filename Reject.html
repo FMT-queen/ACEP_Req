@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+
+    <h2>Reject</h2>
+    <p>Please submit the reason.</p>
+    <!-- <div id="inputContainer"> -->
+       <p></p>
+    <form>
+      <label for="fname">Comment:</label><br>
+      <input style= "width: 350px;height: 50px;" type="text" id="fcomment" name="fcomment" ><br><br> 
+      
+      <!-- <input type="submit" id = "submit" value="submit" onclick="msg()"/>  -->
+
+    </form> 
+    <button id = "btn">submit</button>
+      <script>
+        function msg() {
+          var getComment = document.getElementById("fcomment").value
+          var getDoc = "<?= value ?>"
+          google.script.run.withSuccessHandler(data => { 
+            alert(data);
+            window.top.close();
+            }).rejectFun(getDoc,getComment);
+        } 
+        document.getElementById("btn").addEventListener("click",msg)
+        
+      </script>
+    
+    <!-- </div> -->
+
+    <!-- <button onclick="alert('Do you want to Approve?')">Try it</button> -->
+
+  </body>
+</html>
