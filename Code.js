@@ -7,9 +7,10 @@ const databaseSheetName = "Data_RunDoc";
 const databaseRunningDoc = "Doc.Num_Data";
 
 //initial input sheet
-const sheetFormName = "Form_ACP"
+const sheetFormName = "Form_ACEP"
 const sheetMasterName = "Master"
 const formRunningDocName = "IMP_Doc.Num"
+const formPosted = "Form_Post";
 
 //initial email
 var sheetSection = "IT"
@@ -140,6 +141,7 @@ function onEdit(e){
   var sheetInput = spreadsheet.getSheetByName(sheetFormName); //Sheet input
   var sheetImpDoc = spreadsheet.getSheetByName(formRunningDocName); //Sheet IMP_Doc.Num
   var sheetMaster = spreadsheet.getSheetByName(sheetMasterName); //Sheet Master
+  var sheetPosted = spreadsheet.getSheetByName(formPosted); //Sheet post
   // Entry
   sheetInput.getRange("D5:E7").setBackground('#ffe599');
   sheetInput.getRange(rangeEmpCode).setBackground('#f3f3f3');
@@ -298,7 +300,20 @@ function onEdit(e){
   ) { //Logger.log("Amount edited");
       sheetInput.getRange(rangeTotal).setValue('=SUM(P21:P40)')
   }
+
 }
+
+function myOnEdit(e){
+    //sheet Posted find doc
+  if ( e.source.getSheetName() == sheetPosted && e.range.getColumn() == 1 && e.range.getRow() == 2) {
+    var sheetPosted = spreadsheet.getSheetByName(formPosted); //Sheet post
+    var docPost = sheetPosted.getRange("C3").getValue();
+    Logger.log("searchButt()")
+    searchButt(docPost)
+  }
+}
+
+
 
 
 function generateDocNum_Local(typeDoc){
@@ -773,7 +788,7 @@ var table = "<html><head> <style> table, td, th { border: 1px solid;} table {wid
     //mail body
   var bodyHeader ="Dear, " + emailApproveName +'<br/><br/>' + "This is an auto-generated notification from Advance Clear/Expense Payment Requesition Form, please do not reply.<br/><br/>";
   var bodyData = reqName + " was created a " + typeDocmail +" document as a detail below.<br/>"
-  var mailBody = bodyHeader + bodyData + "<strong>Document No. : </strong>"+ docNo + '<br/>' + "<strong>Requester name : </strong>" + reqName + '<br/>' + "<strong>Vender name : </strong>" +reqVender + '<br/>' +"<strong>Details</strong>" + table  + '<br/>' +"<strong>Total : </strong>"+ reqTotal + " " +shortCurrency+ '<br/>' +"<strong>Attached file : </strong>"+ reqAttach + '<br/>'+ button; //+ buttonReject
+  var mailBody = bodyHeader + bodyData + "<strong>Document No. : </strong>"+ docNo + '<br/>' + "<strong>Requester name : </strong>" + reqName + '<br/>' + "<strong>Pay to : </strong>" +reqVender + '<br/>' +"<strong>Details</strong>" + table  + '<br/>' +"<strong>Total : </strong>"+ reqTotal + " " +shortCurrency+ '<br/>' +"<strong>Attached file : </strong>"+ reqAttach + '<br/>'+ button; //+ buttonReject
 
   //Send the email:
  MailApp.sendEmail({
@@ -888,7 +903,7 @@ function cancelButt(){
     //Logger.log(rowValue[2]);
     
     if (rowValue[2] == cancelDocF) {
-      if(rowValue[0] == 'Requester posted'){3
+      if(rowValue[0] == 'Requester posted'){
        var foundRow = (i+1).toString();
        datasheet.getRange('A'+foundRow).setValue("Cancel by requester"); 
        datasheet.getRange('B'+foundRow).setValue(currentDateTime);
@@ -918,17 +933,23 @@ function cancelButt(){
 }
 
 
-function searchButt() {
+function searchButt(docPost) {
   
   var ui = SpreadsheetApp.getUi();
   var sheetActive = SpreadsheetApp.openById(databaseID); //Sheet Database
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   var sheetInput = spreadsheet.getSheetByName(sheetFormName); //Sheet input
   var datasheet = sheetActive.getSheetByName(databaseSheetName); //Sheet Database
-  var docNoF = sheetInput.getRange(rangeSeachDoc).getValue(); //get doc no.
+
   Logger.log("Doc to find" + docNoF)
   var values = datasheet.getDataRange().getValues();
   var valueFound = false;
+  var docNoF = ""
+  if(docPost == ""){
+    docNoF = sheetInput.getRange(rangeSeachDoc).getValue(); //get doc no.
+  } else  docNoF = docPost;
+  
+
 
   if (sheetInput.getRange(rangeSeachDoc).isBlank() == true ) { // if ไม่ใส่ค่า 
     ui.alert("Please enter value to find")
@@ -1288,9 +1309,6 @@ function cancelLockSheet(){
       sheetProtect.protect().remove();
 
 }
-
-
-
 
 
 
